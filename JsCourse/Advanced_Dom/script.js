@@ -115,12 +115,172 @@ const handelHover = function(e) {
 }
 };
 
-
 nav.addEventListener('mouseover', handelHover.bind(0.5));
 nav.addEventListener('mouseout', handelHover.bind(1));
 
+// Creating the sticky nav
+
+const header = document.querySelector('.header');
+const navHeight = nav.getBoundingClientRect().height;
+
+const stickyNav = function(entries){
+  const [entry] = entries;
+  // console.log(entry);
+  if(!entry.isIntersecting) nav.classList.add('sticky')
+  else nav.classList.remove('sticky')
+};
+
+const navObserver = new IntersectionObserver(stickyNav,{
+  root: null,
+  threshold: 0,
+  rootMargin: `-${navHeight}px`
+}
+);
+
+navObserver.observe(header);
+
+
+//creating the section pop up using intersection observer
+
+const allSections = document.querySelectorAll('.section');
+
+
+const revealSection = function(entries, observer){
+  const [entry] = entries;
+  
+  if(!entry.isIntersecting) return;
+  
+  entry.target.classList.remove('section--hidden');
+  observer.unobserve(entry.target);
+};
+
+const sectionObserver = new IntersectionObserver(revealSection,{
+  root: null,
+  threshold: 0.15,
+});
+
+//(adding the hidden class in all the sections via JS)
+allSections.forEach(function (section) {
+  sectionObserver.observe(section);
+  section.classList.add('section--hidden');
+});
+
+
+//Lazy Loading the image on our website 
+const imgTarget = document.querySelectorAll('img[data-src]');
+
+const loadingImg = function(entries, observer){
+  const [entry] = entries;
+  
+  if(!entry.isIntersecting) return;
+
+  //replave the lazy image with the original image (src => data-src)
+  entry.target.src = entry.target.dataset.src;
+
+  //now instead of removing the class directly we will remove it via a function this is because if we remove the blurr it will show the lazy image directly while replacing the image but we only want the blur to be removed when the load is done for that we will use the EventListener 
+
+  entry.target.addEventListener('load', function(){
+    entry.target.classList.remove('lazy-img');
+  });
+
+  observer.unobserve(entry.target);
+}
+
+const imgObserver = new IntersectionObserver(loadingImg, {
+  root: null,
+  threshold: 0,
+  rootMargin: '200px',
+})
+
+imgTarget.forEach(img => imgObserver.observe(img));
+
 
 ///////////////////////////////////////
+// Slider (implementing the slider functionality)
+const slider = function () {
+  const slides = document.querySelectorAll('.slide');
+  const btnLeft = document.querySelector('.slider__btn--left');
+  const btnRight = document.querySelector('.slider__btn--right');
+  const dotContainer = document.querySelector('.dots');
+
+  let curSlide = 0;
+  const maxSlide = slides.length;
+
+  // Functions
+  const createDots = function () {
+    slides.forEach(function (_, i) {
+      dotContainer.insertAdjacentHTML(
+        'beforeend',
+        `<button class="dots__dot" data-slide="${i}"></button>`
+      );
+    });
+  };
+
+  const activateDot = function (slide) {
+    document
+      .querySelectorAll('.dots__dot')
+      .forEach(dot => dot.classList.remove('dots__dot--active'));
+
+    document
+      .querySelector(`.dots__dot[data-slide="${slide}"]`)
+      .classList.add('dots__dot--active');
+  };
+
+  const goToSlide = function (slide) {
+    slides.forEach(
+      (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
+    );
+  };
+
+  // Next slide
+  const nextSlide = function () {
+    if (curSlide === maxSlide - 1) {
+      curSlide = 0;
+    } else {
+      curSlide++;
+    }
+
+    goToSlide(curSlide);
+    activateDot(curSlide);
+  };
+
+  const prevSlide = function () {
+    if (curSlide === 0) {
+      curSlide = maxSlide - 1;
+    } else {
+      curSlide--;
+    }
+    goToSlide(curSlide);
+    activateDot(curSlide);
+  };
+
+  const init = function () {
+    goToSlide(0);
+    createDots();
+
+    activateDot(0);
+  };
+  init();
+
+  // Event handlers
+  btnRight.addEventListener('click', nextSlide);
+  btnLeft.addEventListener('click', prevSlide);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') prevSlide();
+    e.key === 'ArrowRight' && nextSlide();
+  });
+
+  dotContainer.addEventListener('click', function (e) {
+    if (e.target.classList.contains('dots__dot')) {
+      const { slide } = e.target.dataset;
+      goToSlide(slide);
+      activateDot(slide);
+    }
+  });
+};
+slider();
+////////////////////////////////////////
 ////////////// LECTURES  //////////////
 ///////////////////////////////////////
 
