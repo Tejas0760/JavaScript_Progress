@@ -140,7 +140,7 @@ person2.greet();
 ////////////////////////////////////
 // Getters and setters
 ///////////////////////////////////
-
+/*
 class PersonCl {
     //pass all the parameters you need in this constructor and make sure that it is named constructor only
     constructor(fullName, birthYr){
@@ -191,7 +191,7 @@ const account = {
 
 //   PersonCl.hey();
 //   walter.hey();
-
+*/
 
 
 ///////////////////////////////////////
@@ -223,10 +223,10 @@ const PersonProto = {
   sarah.calcAge();
 */
 
-
-
 ///////////////////////////////////////
 // Inheritance Between "Classes": Constructor Functions
+//////////////////////////////////////
+
 /*
 const Person = function (firstName, birthYear) {
     this.firstName = firstName;
@@ -262,4 +262,156 @@ const Person = function (firstName, birthYear) {
   
   Student.prototype.constructor = Student;
   console.dir(Student.prototype.constructor);
+*/
+
+
+
+///////////////////////////////////////
+// Inheritance Between "Classes": ES6 Classes
+//////////////////////////////////////
+
+/*
+class PersonCl {
+    constructor(fullName, birthYear) {
+      this.fullName = fullName;
+      this.birthYear = birthYear;
+    }
+  
+    // Instance methods
+    calcAge() {
+      console.log(2037 - this.birthYear);
+    }
+  
+    greet() {
+      console.log(`Hey ${this.fullName}`);
+    }
+  
+    get age() {
+      return 2037 - this.birthYear;
+    }
+  
+    set fullName(name) {
+      if (name.includes(' ')) this._fullName = name;
+      else alert(`${name} is not a full name!`);
+    }
+  
+    get fullName() {
+      return this._fullName;
+    }
+  
+    // Static method
+    static hey() {
+      console.log('Hey there 👋');
+    }
+  }
+  
+  class StudentCl extends PersonCl {
+    constructor(fullName, birthYear, course) {
+      // Always needs to happen first!
+      super(fullName, birthYear);
+      this.course = course;
+    }
+  
+    introduce() {
+      console.log(`My name is ${this.fullName} and I study ${this.course}`);
+    }
+  
+    calcAge() {
+      console.log(
+        `I'm ${
+          2037 - this.birthYear
+        } years old, but as a student I feel more like ${
+          2037 - this.birthYear + 10
+        }`
+      );
+    }
+  }
+  
+  const martha = new StudentCl('Martha Jones', 2012, 'Computer Science');
+  martha.introduce();
+  martha.calcAge();
+*/
+
+
+///////////////////////////////////////
+// Inheritance Between "Classes": Object.create
+
+/*
+const PersonProto = {
+    calcAge() {
+      console.log(2037 - this.birthYear);
+    },
+  
+    init(firstName, birthYear) {
+      this.firstName = firstName;
+      this.birthYear = birthYear;
+    },
+  };
+  
+  const steven = Object.create(PersonProto);
+  
+  const StudentProto = Object.create(PersonProto);
+  StudentProto.init = function (firstName, birthYear, course) {
+    PersonProto.init.call(this, firstName, birthYear);
+    this.course = course;
+  };
+  
+  StudentProto.introduce = function () {
+    // BUG in video:
+    // console.log(`My name is ${this.fullName} and I study ${this.course}`);
+    
+    // FIX:
+    console.log(`My name is ${this.firstName} and I study ${this.course}`);
+  };
+  
+  const jay = Object.create(StudentProto);
+  jay.init('Jay', 2010, 'Computer Science');
+  jay.introduce();
+  jay.calcAge();
+  
+*/
+
+
+
+/////////////////////////////////
+/// ENCAPSULATION
+///////////////////////////////
+
+//Basically there are 3 methods same as Java but this is not enforced by the language but only at a developer level as a convention that everyone follows
+// Public fileds and methods (normal declaration)
+// Priavte fileds and methods (# used in front)
+// Protected fields and methods (_ used in front)
+/*
+class random {
+    // Public field
+    foto;
+
+    // Private fileds
+    _liked;
+
+    // Protected fields
+    #password; 
+
+    constructor(){
+        console.log('This is now working');
+    }
+
+    //private field
+    #setPass(pass) {
+        this.#password = pass;
+    }
+
+    //public filed
+    getPass(){
+        return this.#password;
+    }
+}
+
+const randm = new random();
+console.log(randm);
+randm.foto = 'Noice foto';
+randm._liked = "Le re le";
+// randm.#setPass('Noice');
+console.log(randm.getPass());
+// randm.#password = "Leak hua kya?";
 */
