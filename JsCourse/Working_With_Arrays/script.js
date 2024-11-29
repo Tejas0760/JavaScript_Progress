@@ -251,7 +251,9 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 /*
 let arr = ['a', 'b', 'c', 'd', 'e'];
 console.log(arr.slice(2, 4));
+
 //Slice wont make changes in the actual array
+
 console.log(arr);
 console.log(arr.slice(2));
 console.log(arr.slice(-1));
@@ -264,6 +266,7 @@ console.log([...arr]);
 let arr2 = ['j', 'i', 'h', 'g', 'f'];
 // console.log(arr2.splice(1,3));
 console.log(arr2);
+
 //Similar to slice but makes changes to the actuall array
 
 
@@ -429,7 +432,7 @@ console.log(Math.trunc(totalDepositUSD));
 
 
 /////////////////////////////////////
-///// FIND METHOD (pretty much similar to the filter method in array the main difference between the two is THE First that in find method it will return the first occurance of the value unlike the filter method which give all the occurances, THE Second difference is that it will actually give you the value unlike the filter method which will give you a new array of all the occurance fullfiling the value of that condition)
+///// FIND METHOD (pretty much similar to the filter method in array the main difference between the two is 1:THE First: that in find method it will return the first occurance of the value unlike the filter method which give all the occurances, 2 THE Second: difference is that it will actually give you the value unlike the filter method which will give you a new array of all the occurance fullfiling the value of that condition)
 ////////////////////////////////////
 /*
 console.log(movements);
