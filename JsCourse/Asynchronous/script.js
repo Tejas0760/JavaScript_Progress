@@ -5,6 +5,12 @@ const countriesContainer = document.querySelector('.countries');
 
 ///////////////////////////////////////
 
+const getPosition = function() {
+  return new Promise( function(resolve, reject){
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+
 const renderCountry = function(data, className = ''){
     const html = `
     <article class="country ${className}">
@@ -187,10 +193,8 @@ const getCountryData = function (country) {
       countriesContainer.style.opacity = 1;
     });
 };
-getCountryData('japan');
+getCountryData('south africa');
 */
-
-
 
 
 ///////////////////////////////////////
@@ -245,3 +249,256 @@ whereAmI(52.508, 13.381);
 whereAmI(19.037, 72.873);
 whereAmI(-33.933, 18.474);
 */
+
+
+
+
+
+
+
+///////////////////////////////////////
+/////// a little bit about the event loop in JS and how JS handels asynchronous tasks when it only works on a single thread
+//synchronous tasks takes preferance over the asynchronous part showed via the console.log
+
+/*
+console.log("Starting the program");
+setTimeout(() => {console.log("Timer part running")}, 0);
+
+//promise will take preferance over the callback queue because the promises are stored in a special queue know as the microtasks queue 
+Promise.resolve('Resolved Promise 1').then(response => {
+  console.log(response);
+});
+
+//a timeout method will make sure that the timeout runs more than or after the timeout specified but not before it because the promises can increase the time taken in the timeout part this can be proved by the code below
+Promise.resolve('Time taking Resolved promise').then(res => {
+  for(let i = 0; i < 1000000000; i++){}
+  console.log(res);
+})
+
+console.log("Ending the program");
+*/
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////
+// Simple Resolve promise 
+///////////////////////////////////////
+/*
+const lottery = new Promise(function (resolve, reject) {
+  console.log("The lottery draw is happening")
+  setTimeout( function(){
+  if(Math.random() >= 0.5){
+    resolve('You Won!');
+  }
+  else{
+    reject(new Error('You Lost Your Money'));
+  }
+}, 2000)
+});
+
+lottery.then(res => console.log(res)).catch(err => console.error(err)); 
+
+
+
+// Promisifying setTimeout
+const wait = function (seconds) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, seconds * 1000);
+  });
+};
+
+wait(1)
+  .then(() => {
+    console.log('1 second passed');
+    return wait(1);
+  })
+  .then(() => {
+    console.log('2 second passed');
+    return wait(1);
+  })
+  .then(() => {
+    console.log('3 second passed');
+    return wait(1);
+  })
+  .then(() => console.log('4 second passed'));
+
+// setTimeout(() => {
+//   console.log('1 second passed');
+//   setTimeout(() => {
+//     console.log('2 seconds passed');
+//     setTimeout(() => {
+//       console.log('3 second passed');
+//       setTimeout(() => {
+//         console.log('4 second passed');
+//       }, 1000);
+//     }, 1000);
+//   }, 1000);
+// }, 1000);
+
+Promise.resolve('abc').then(x => console.log(x));
+Promise.reject(new Error('Problem!')).catch(x => console.error(x));
+*/
+
+/*
+const getPosition = function() {
+  return new Promise( function(resolve, reject){
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+
+getPosition().then(pos => console.log(pos));
+
+
+const whereAmI = function (lat, lng) {
+  getPosition().then( pos => {
+    const {latitude : lat, longitude : lng} = pos.coords;
+    return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`Problem with geocoding ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      console.log(data);
+      console.log(`You are in ${data.city}, ${data.country}`);
+
+      return fetch(`https://restcountries.com/v3.1/name/${data.country}`);
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`Country not found (${res.status})`);
+
+      return res.json();
+    })
+    .then(data => renderCountry(data))
+    .catch(err => console.error(`${err.message} 💥`));
+};
+
+btn.addEventListener('click', whereAmI);
+*/
+
+
+
+
+///////////////////////////////////////
+// Coding Challenge #2
+
+/* 
+Build the image loading functionality that I just showed you on the screen.
+
+Tasks are not super-descriptive this time, so that you can figure out some stuff on your own. Pretend you're working on your own 😉
+
+PART 1
+1. Create a function 'createImage' which receives imgPath as an input. This function returns a promise which creates a new image (use document.createElement('img')) and sets the .src attribute to the provided image path. When the image is done loading, append it to the DOM element with the 'images' class, and resolve the promise. The fulfilled value should be the image element itself. In case there is an error loading the image ('error' event), reject the promise.
+
+If this part is too tricky for you, just watch the first part of the solution.
+
+PART 2
+2. Comsume the promise using .then and also add an error handler;
+3. After the image has loaded, pause execution for 2 seconds using the wait function we created earlier;
+4. After the 2 seconds have passed, hide the current image (set display to 'none'), and load a second image (HINT: Use the image element returned by the createImage promise to hide the current image. You will need a global variable for that 😉);
+5. After the second image has loaded, pause execution for 2 seconds again;
+6. After the 2 seconds have passed, hide the current image.
+
+TEST DATA: Images in the img folder. Test the error handler by passing a wrong image path. Set the network speed to 'Fast 3G' in the dev tools Network tab, otherwise images load too fast.
+
+GOOD LUCK 😀
+*/
+
+
+/*
+let currentImg;
+const imgContainer = document.querySelector('.images');
+
+const wait = function (seconds) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, seconds * 1000);
+  });
+};
+
+const loadImage = function(imgSrc){
+  return new Promise(function(resolve, reject){
+    const img = document.createElement('img');
+    img.src = imgSrc;
+
+    img.addEventListener('load', function(){
+      imgContainer.append(img);
+      resolve(img);
+    })
+
+    img.addEventListener('error', function() {
+      reject(new Error('Error in loading the image'));
+    })
+  })
+}
+
+
+loadImage('img/img-1.jpg')
+  .then(img => {
+    currentImg = img;
+    console.log('Image 1 loaded');
+    return wait(2);
+  })
+  .then(() => {
+    currentImg.style.display = 'none';
+    return loadImage('img/img-2.jpg');
+  })
+  .then(img => {
+    currentImg = img;
+    console.log('Image 2 loaded');
+    return wait(2);
+  })
+  .then(() => {
+    currentImg.style.display = 'none';
+  })
+  .catch(err => console.error(err));
+
+
+  */
+
+
+
+///////////////////////////////////////////////////////////////
+//  *******************  ASYNC AWAIT *********************  //
+//////////////////////////////////////////////////////////////
+
+/*
+const loadPage = async function(){
+  try{
+  const pos = await getPosition()
+  const {latitude : lat, longitude : lng} = pos.coords;
+
+  const geoUrl = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
+  if (!geoUrl.ok) throw new Error('Problem getting location data');
+
+  const dataGeo = await geoUrl.json();
+  console.log(dataGeo);
+
+  const cntryUrl = await fetch(`https://restcountries.com/v3.1/name/${dataGeo.country}`)
+  if(!cntryUrl.ok) throw new Error('Problem getting country data');
+
+  const data = await cntryUrl.json();
+  console.log(data);
+
+  renderCountry(data);
+  }
+  catch(err){
+    console.error(`${err} 💥`);
+    renderError(`💥 ${err.message}`);
+  }
+}
+
+loadPage();
+*/
+// try {
+//   let y = 1;
+//   const x = 2;
+//   y = 3;
+// } catch (err) {
+//   alert(err.message);
+// }
